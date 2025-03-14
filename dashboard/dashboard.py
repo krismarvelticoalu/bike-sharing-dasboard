@@ -4,12 +4,13 @@ import seaborn as sns
 import streamlit as st
 import numpy as np
 import datetime
+import os
 from babel.numbers import format_currency
 sns.set(style='dark')
 
 # Load file CSV ke dalam dataframe
-df_day_initial = pd.read_csv('day_data.csv')
-df_hour_initial = pd.read_csv('hour_data.csv')
+df_day_initial = pd.read_csv(os.path.join(os.path.dirname(__file__), "day_data.csv"))
+df_hour_initial = pd.read_csv(os.path.join(os.path.dirname(__file__), "hour_data.csv"))
 
 min_date = df_hour_initial["dteday"].min()
 max_date = df_hour_initial["dteday"].max()
@@ -69,7 +70,7 @@ if mode == 'Custom Period':
     st.header('Clustering')
     st.text('Group each day into three different categories (Low, Medium, High) based on number of users')
 
-    st.scatter_chart(df_day, x="casual", y="registered", x_label="Casual user", y_label="Registered user", color="performance_rating")
+    st.scatter_chart(df_day, x="casual", y="registered", x_label="Casual user", y_label="Registered user", color='performance_rating')
 
 
 elif mode == 'Daily':
