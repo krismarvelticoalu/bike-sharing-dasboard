@@ -5,10 +5,9 @@ import streamlit as st
 import numpy as np
 import datetime
 from babel.numbers import format_currency
-# sns.set(style='dark')
+sns.set(style='dark')
 
-
-# Load CSV file into dataframes
+# Load file CSV ke dalam dataframe
 df_day_initial = pd.read_csv('day_data.csv')
 df_hour_initial = pd.read_csv('hour_data.csv')
 
@@ -30,64 +29,70 @@ with st.sidebar:
     # Memilih mode daily atau hourly
     mode = st.selectbox(
         label="Dashboard Mode",
-        options=('Daily', 'Hourly')
+        options=('Custom Period', 'Daily')
     )
     # Mengambil start_date & end_date dari date_input
-    if mode == 'Daily':
+    if mode == 'Custom Period':
         start_date, end_date = st.date_input(
-            label='Rentang Waktu',min_value=min_date,
+            label='Time Period',min_value=min_date,
             max_value=max_date,
             value=[min_date, max_date]
         )
         df_day = df_day_initial[(df_day_initial["dteday"] >= str(start_date)) & (df_day_initial["dteday"] <= str(end_date))]
-    elif mode == 'Hourly':
-        chosen_date = st.date_input("What day?", datetime.date(2011, 1, 1))
+    elif mode == 'Daily':
+        chosen_date = st.date_input("Date", value=min_date, min_value=min_date,
+            max_value=max_date)
         df_hour = df_hour_initial[(df_hour_initial["dteday"] == str(chosen_date))]
 # ------------------------------------------------------------------------------------
 
 
 # ------------------------------- MAIN CONTENT ----------------------------------------
-if mode == 'Daily':
-    st.header("Bike Sharing System Dashboard")
+if mode == 'Custom Period':
+    # ------------------------------ TITLE ------------------------------------------------
+    st.title("Bike Sharing System Dashboard")
 
     # --------------------------- LINE CHART ---------------------------
-    st.subheader('Daily Rents')
+    st.header('User Trend')
 
-    st.line_chart(df_day, x='dteday', y='cnt')
+    st.line_chart(df_day, x='dteday', y='cnt', x_label='Time period', y_label='Number of users')
 
-    # --------------------------- BAR CHART ----------------------------
-    st.subheader('Weekday User Performance')
+    # --------------------------- PIE CHART -------------------------------
+    st.header('User Distribution')
 
-    st.bar_chart(df_day, x='weekday', y='cnt', y_label='Number of users')
+    labels = 'Casual', 'Registered'
+    sizes = [df_day['casual'].sum(), df_day['registered'].sum()]
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', radius=0.7)
+    st.pyplot(fig)
 
-    # ----------------------------- PIE CHART ----------------------------
-    # st.subheader('User Distribution')
+    # -------------------------- SCATTERPLOT ---------------------------------
+    st.header('Clustering')
+    st.text('Group each day into three different categories (Low, Medium, High) based on number of users')
 
-    # labels = 'Casual', 'Registered'
-    # sizes = [df_day['casual'].sum(), df_day['registered'].sum()]
-    # fig, ax = plt.subplots()
-    # ax.pie(sizes, labels=labels, autopct='%1.1f%%')
-    # st.pyplot(fig)
-
-    # Best performing season/day/year/month based on casual/registered/cnt using bar chart
-    # st.subheader('Best Performing day')
-    # st.bar_chart(df_day, x="weekday", y="cnt")
+    st.scatter_chart(df_day, x="casual", y="registered", x_label="Casual user", y_label="Registered user", color="performance_rating")
 
 
-elif mode == 'Hourly':
+elif mode == 'Daily':
+    # ---------------------------- TITLE --------------------------------------
     st.header("Bike Sharing System Dashboard")
 
     # -------------------------- LINE CHART ----------------------------
-    st.subheader('Hourly Rents')
-    st.line_chart(df_hour, x='hr', y='cnt')
+    st.header('User Trend (in a day)')
+    st.line_chart(df_hour, x='hr', y='cnt', x_label='Hour', y_label='Number of Users')
 
     # -------------------------- PIE CHART -----------------------------
-    # st.subheader('User Distribution')
+    st.header('User Distribution')
 
-    # labels = 'Casual', 'Registered'
-    # sizes = [df_hour['casual'].sum(), df_hour['registered'].sum()]
-    # fig, ax = plt.subplots()
-    # ax.pie(sizes, labels=labels, autopct='%1.1f%%')
-    # st.pyplot(fig)
+    labels = 'Casual', 'Registered'
+    sizes = [df_hour['casual'].sum(), df_hour['registered'].sum()]
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', radius=0.7)
+    st.pyplot(fig)
 
-    # Best performing time of the day based on casual/registered/cnt using bar chart
+    # --------------------------- SCATTERPLOT --------------------------------
+    st.header('Clustering')
+    st.text('Group each hour into three different categories (Low, Medium, High) based on number of users')
+
+    st.scatter_chart(df_hour, x="casual", y="registered", x_label="Casual user", y_label="Registered user", color="performance_rating")
+
+    
