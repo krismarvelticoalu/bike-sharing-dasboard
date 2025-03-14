@@ -70,7 +70,7 @@ if mode == 'Custom Period':
     st.header('Clustering')
     st.text('Group each day into three different categories (Low, Medium, High) based on number of users')
 
-    st.scatter_chart(df_day, x="casual", y="registered", x_label="Casual user", y_label="Registered user", color='performance_rating')
+    st.scatter_chart(df_day, x="casual", y="registered", x_label="Casual user", y_label="Registered user", color="performance_rating")
 
 
 elif mode == 'Daily':

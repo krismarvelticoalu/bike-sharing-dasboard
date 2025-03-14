@@ -1,8 +1,0 @@
-pandas
-matplotlib.pyplot
-seaborn
-streamlit
-numpy
-datetime
-os
-babel.numbers
